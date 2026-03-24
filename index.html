@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>익명 게시판</title>
+<style>
+body{font-family:Arial;max-width:800px;margin:auto}
+input,textarea{width:100%;margin:5px 0}
+.post{border-bottom:1px solid #ccc;padding:10px}
+</style>
+</head>
+
+<body>
+
+<h1>익명 게시판</h1>
+
+<h3>새 글 작성</h3>
+
+<input id="title" placeholder="제목">
+<input id="nickname" placeholder="닉네임">
+<input id="password" placeholder="비밀번호">
+<textarea id="content" placeholder="내용"></textarea>
+
+<button onclick="createPost()">작성</button>
+
+<hr>
+
+<div id="posts"></div>
+
+<script>
+
+const url = "sb_publishable_xr2SDoyJyJfKu-0RioO1HA_SVjTQA2l";
+const key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp6ampsYmR5eHpkaHRlZG92a3RlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyOTE5ODAsImV4cCI6MjA4OTg2Nzk4MH0.E5eSt1DTWWR0F30Up-gW3nRz3OMrzdSko2rEzkoEq9I";
+
+async function loadPosts(){
+
+const res = await fetch(url+"/rest/v1/posts?select=*",{
+headers:{
+apikey:key,
+Authorization:"Bearer "+key
+}
+})
+
+const data = await res.json()
+
+let html=""
+
+data.reverse().forEach(p=>{
+
+html+=`
+<div class="post">
+<b>${p.title}</b><br>
+${p.nickname}<br>
+${p.content}
+</div>
+`
+
+})
+
+document.getElementById("posts").innerHTML=html
+}
+
+async function createPost(){
+
+const title=document.getElementById("title").value
+const nickname=document.getElementById("nickname").value
+const password=document.getElementById("password").value
+const content=document.getElementById("content").value
+
+await fetch(url+"/rest/v1/posts",{
+method:"POST",
+headers:{
+apikey:key,
+Authorization:"Bearer "+key,
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+title,
+nickname,
+password,
+content
+})
+})
+
+location.reload()
+}
+
+loadPosts()
+
+</script>
+
+</body>
+</html>
